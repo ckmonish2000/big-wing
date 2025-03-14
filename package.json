@@ -1,0 +1,14 @@
+{
+  "name": "big-wing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:backend": "pnpm --filter \"./packages/*\" start:dev",
+    "start:frontend": "pnpm --filter \"./packages/*\" dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.4.1"
+}
