@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
 import { LocationsService } from './locations.service';
 import GetLocationsDto from './dtos/get-locations-dto';
 import { ApiResponse, Location, PaginatedResponse } from '@big-wing/common';
