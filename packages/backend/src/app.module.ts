@@ -10,8 +10,8 @@ import { SharedModule } from './shared/shared.module';
   imports: [
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
-    LocationsModule,
     SharedModule,
+    LocationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

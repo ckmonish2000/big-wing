@@ -1,5 +1,5 @@
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms/button";
 import { Link } from "react-router-dom";
 import { MenuIcon, PlaneTakeoff, X } from "lucide-react";
 import { useState } from "react";

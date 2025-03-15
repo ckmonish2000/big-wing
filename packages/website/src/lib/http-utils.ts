@@ -3,7 +3,7 @@ import supabase from '@/lib/supabase';
 
 const ApiUrl = import.meta.env.VITE_PUBLIC_API_URL;
 
-export const UrlParamsReplace = (
+export const buildUrl = (
     url: string,
     params: Record<string, string> = {},
     queryParams: Record<string, string | number | boolean> = {}

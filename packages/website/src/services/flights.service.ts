@@ -1,6 +1,6 @@
-import * as HttpUtils from '@/lib/http-utils'
+import * as HttpClient from "@/services/client";
 
 export const searchForFlights = async () => {
-    const url = HttpUtils.UrlParamsReplace('/protected')
-    return HttpUtils.getWithAuth(url)
-}
+  const url = HttpClient.buildUrl("/protected");
+  return HttpClient.apiGet(url);
+};

@@ -3,14 +3,14 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { ArrowLeft, ArrowRight, Filter, CalendarIcon, Clock, Plane, ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/atoms/button";
+import { Card, CardContent } from "@/components/atoms/card";
+import { Separator } from "@/components/atoms/separator";
+import { Checkbox } from "@/components/atoms/checkbox";
+import { Badge } from "@/components/atoms/badge";
+import { Slider } from "@/components/atoms/slider";
+import { RadioGroup, RadioGroupItem } from "@/components/atoms/radio-group";
+import { Label } from "@/components/atoms/label";
 import {
   Sheet,
   SheetContent,
@@ -18,21 +18,21 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@/components/atoms/sheet";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+} from "@/components/atoms/select";
+import { Input } from "@/components/atoms/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/atoms/popover";
+import { Skeleton } from "@/components/atoms/skeleton";
 import { generateMockFlights, airlines } from "@/lib/mockData";
 import { Flight, FlightSearchParams, FlightFilterOptions, SortCriteria, SortOption, SortDirection } from "@/types/flight";
 

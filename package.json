@@ -7,10 +7,12 @@
     "start:backend": "pnpm --filter \"./packages/*\" start:dev",
     "start:frontend": "pnpm --filter \"./packages/*\" dev",
     "db:seed": "pnpm --filter \"./packages/*\" seed"
-
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.4.1"
+  "packageManager": "pnpm@10.4.1",
+  "workspaces": [
+    "packages/*"
+  ]
 }

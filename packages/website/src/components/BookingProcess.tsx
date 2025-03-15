@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, addMinutes } from "date-fns";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/sonner";
+import { Button } from "@/components/atoms/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/atoms/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/atoms/form";
+import { Input } from "@/components/atoms/input";
+import { Checkbox } from "@/components/atoms/checkbox";
+import { Separator } from "@/components/atoms/separator";
+import { toast } from "@/components/atoms/sonner";
 import { Flight, FlightPrice, BookingPassenger } from "@/types/flight";
 
 interface BookingProcessProps {

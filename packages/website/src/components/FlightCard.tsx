@@ -1,9 +1,9 @@
 
 import { format, addMinutes } from "date-fns";
 import { ArrowRight, Clock, Plane } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/atoms/card";
+import { Button } from "@/components/atoms/button";
+import { Badge } from "@/components/atoms/badge";
 import { Flight, FlightPrice } from "@/types/flight";
 
 // Helper function to format duration in hours and minutes

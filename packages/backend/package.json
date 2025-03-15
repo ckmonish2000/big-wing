@@ -1,12 +1,12 @@
 {
-  "name": "backend",
+  "name": "@big-wing/backend",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "seed":"ts-node ./supabase/seed/seed.ts",
+    "seed": "ts-node ./supabase/seed/seed.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -19,10 +19,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:reset":"supabase db reset --linked",
-    "db:migrate":"supabase db push"
+    "db:reset": "supabase db reset --linked",
+    "db:migrate": "supabase db push"
   },
   "dependencies": {
+    "@big-wing/common": "workspace:^",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^11.0.1",
@@ -30,6 +31,8 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@supabase/supabase-js": "^2.49.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "dotenv": "^16.4.7",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
