@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .  # ✅ Context is the root
+      dockerfile: packages/backend/Dockerfile
+      target: dev
+    env_file:
+      - .env  # ✅ Load shared environment variables
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./packages/backend:/usr/src/app/packages/backend
+      - /usr/src/app/packages/backend/node_modules
+    networks:
+      - app-network
+
+  # frontend:
+  #   build:
+  #     context: .  # ✅ Context is the root
+  #     dockerfile: packages/frontend/Dockerfile
+  #   env_file:
+  #     - .env  # ✅ Load shared environment variables
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - app-network
+
+  # caddy:
+  #   image: caddy:latest
+  #   container_name: caddy_proxy
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #   depends_on:
+  #     - frontend
+  #     - backend
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:

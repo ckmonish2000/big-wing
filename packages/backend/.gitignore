@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+
+.pnpm-store
+
 # Logs
 logs
 *.log
