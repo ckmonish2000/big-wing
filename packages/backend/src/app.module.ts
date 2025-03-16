@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { LocationsModule } from './locations/locations.module';
 import { SharedModule } from './shared/shared.module';
+import { FlightsModule } from './flights/flights.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { SharedModule } from './shared/shared.module';
     ConfigModule.forRoot({ isGlobal: true }),
     SharedModule,
     LocationsModule,
+    FlightsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
