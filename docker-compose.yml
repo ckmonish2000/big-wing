@@ -9,25 +9,26 @@ services:
     env_file:
       - .env  # ✅ Load shared environment variables
     ports:
-      - "4000:4000"
+      - "3000:3000"
     volumes:
       - ./packages/backend:/usr/src/app/packages/backend
       - /usr/src/app/packages/backend/node_modules
     networks:
       - app-network
 
-  # frontend:
-  #   build:
-  #     context: .  # ✅ Context is the root
-  #     dockerfile: packages/frontend/Dockerfile
-  #   env_file:
-  #     - .env  # ✅ Load shared environment variables
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - backend
-  #   networks:
-  #     - app-network
+  frontend:
+    build:
+      context: .  # ✅ Context is the root
+      dockerfile: packages/website/Dockerfile
+      target: dev
+    env_file:
+      - .env  # ✅ Load shared environment variables
+    ports:
+      - "4200:4200"
+    # depends_on:
+    #   - backend
+    networks:
+      - app-network
 
   # caddy:
   #   image: caddy:latest
