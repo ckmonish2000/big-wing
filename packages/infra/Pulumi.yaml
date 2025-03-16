@@ -1,0 +1,10 @@
+name: digital-ocean
+description: A minimal DigitalOcean TypeScript Pulumi program
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: digitalocean-typescript
