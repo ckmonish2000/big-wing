@@ -3,156 +3,21 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
 const flights = [
-  {
-    flightNumber: 'AA100',
-    airlineId: null, // Will be populated from AA airline
-    originId: null, // Will be populated from LAX location
-    destinationId: null, // Will be populated from JFK location
-    totalDuration: '8:00:00', // 8 hours as interval
-    price: 1200.0,
-    cabinClass: 'Business',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'UA201',
-    airlineId: null, // Will be populated from UA airline
-    originId: null, // Will be populated from SFO location
-    destinationId: null, // Will be populated from ORD location
-    totalDuration: '4:15:00',
-    price: 450.0,
-    cabinClass: 'Economy',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'DL401',
-    airlineId: null, // Will be populated from DL airline
-    originId: null, // Will be populated from JFK location
-    destinationId: null, // Will be populated from CDG location
-    totalDuration: '7:15:00',
-    price: 750.0,
-    cabinClass: 'Premium_Economy',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'BA172',
-    airlineId: null, // Will be populated from BA airline
-    originId: null, // Will be populated from LHR location
-    destinationId: null, // Will be populated from JFK location
-    totalDuration: '7:15:00',
-    price: 3500.0,
-    cabinClass: 'First',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'LH400',
-    airlineId: null, // Will be populated from LH airline
-    originId: null, // Will be populated from FRA location
-    destinationId: null, // Will be populated from JFK location
-    totalDuration: '8:45:00',
-    price: 2200.0,
-    cabinClass: 'Business',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'AF337',
-    airlineId: null, // Will be populated from AF airline
-    originId: null, // Will be populated from CDG location
-    destinationId: null, // Will be populated from PEK location
-    totalDuration: '11:15:00',
-    price: 1800.0,
-    cabinClass: 'Business',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'EK203',
-    airlineId: null, // Will be populated from EK airline
-    originId: null, // Will be populated from DXB location
-    destinationId: null, // Will be populated from JFK location
-    totalDuration: '13:45:00',
-    price: 4500.0,
-    cabinClass: 'First',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'SQ321',
-    airlineId: null, // Will be populated from SQ airline
-    originId: null, // Will be populated from SIN location
-    destinationId: null, // Will be populated from LHR location
-    totalDuration: '13:10:00',
-    price: 2800.0,
-    cabinClass: 'Business',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'QF1',
-    airlineId: null, // Will be populated from QF airline
-    originId: null, // Will be populated from SYD location
-    destinationId: null, // Will be populated from LHR location
-    totalDuration: '22:50:00',
-    price: 5200.0,
-    cabinClass: 'First',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'AC855',
-    airlineId: null, // Will be populated from AC airline
-    originId: null, // Will be populated from YYZ location
-    destinationId: null, // Will be populated from LHR location
-    totalDuration: '7:45:00',
-    price: 1100.0,
-    cabinClass: 'Premium_Economy',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'KL601',
-    airlineId: null, // Will be populated from KL airline
-    originId: null, // Will be populated from AMS location
-    destinationId: null, // Will be populated from SIN location
-    totalDuration: '12:45:00',
-    price: 2400.0,
-    cabinClass: 'Business',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'NH106',
-    airlineId: null, // Will be populated from NH airline
-    originId: null, // Will be populated from HND location
-    destinationId: null, // Will be populated from LAX location
-    totalDuration: '9:45:00',
-    price: 4800.0,
-    cabinClass: 'First',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'KE90',
-    airlineId: null, // Will be populated from KE airline
-    originId: null, // Will be populated from ICN location
-    destinationId: null, // Will be populated from JFK location
-    totalDuration: '14:30:00',
-    price: 2600.0,
-    cabinClass: 'Business',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'CA987',
-    airlineId: null, // Will be populated from CA airline
-    originId: null, // Will be populated from PEK location
-    destinationId: null, // Will be populated from LHR location
-    totalDuration: '11:25:00',
-    price: 900.0,
-    cabinClass: 'Premium_Economy',
-    flightStatus: 'On_Time',
-  },
-  {
-    flightNumber: 'TK77',
-    airlineId: null, // Will be populated from TK airline
-    originId: null, // Will be populated from ICN location
-    destinationId: null, // Will be populated from AMS location
-    totalDuration: '12:15:00',
-    price: 1900.0,
-    cabinClass: 'Business',
-    flightStatus: 'On_Time',
-  },
+  { flightNumber: 'AA100', airlineCode: 'AA' },
+  { flightNumber: 'UA201', airlineCode: 'UA' },
+  { flightNumber: 'DL401', airlineCode: 'DL' },
+  { flightNumber: 'BA172', airlineCode: 'BA' },
+  { flightNumber: 'LH400', airlineCode: 'LH' },
+  { flightNumber: 'AF337', airlineCode: 'AF' },
+  { flightNumber: 'EK203', airlineCode: 'EK' },
+  { flightNumber: 'SQ321', airlineCode: 'SQ' },
+  { flightNumber: 'QF1', airlineCode: 'QF' },
+  { flightNumber: 'AC855', airlineCode: 'AC' },
+  { flightNumber: 'KL601', airlineCode: 'KL' },
+  { flightNumber: 'NH106', airlineCode: 'NH' },
+  { flightNumber: 'KE90', airlineCode: 'KE' },
+  { flightNumber: 'CA987', airlineCode: 'CA' },
+  { flightNumber: 'TK77', airlineCode: 'TK' },
 ];
 
 const flightRoutes: any = {
@@ -174,57 +39,82 @@ const flightRoutes: any = {
 };
 
 export default async function seedFlights(supabase: SupabaseClient) {
-  console.log('Seeding flights...');
+  console.log('🚀 Seeding flights and routes...');
 
-  // First get all airline and location IDs
-  const { data: airlineData } = await supabase
+  // Fetch airline and location IDs
+  const { data: airlineData, error: airlineError } = await supabase
     .from('airlines')
     .select('id, code');
-  const { data: locationData } = await supabase
+  if (airlineError) {
+    console.error('❌ Error fetching airlines:', airlineError);
+    return;
+  }
+
+  const { data: locationData, error: locationError } = await supabase
     .from('locations')
     .select('id, code');
+  if (locationError) {
+    console.error('❌ Error fetching locations:', locationError);
+    return;
+  }
 
-  const airlineMap = new Map(airlineData?.map((a) => [a.code, a.id]));
-  const locationMap = new Map(locationData?.map((l) => [l.code, l.id]));
+  const airlineMap = new Map(airlineData.map((a) => [a.code, a.id]));
+  const locationMap = new Map(locationData.map((l) => [l.code, l.id]));
+
   for (const flight of flights) {
-    const airlineCode = flight.flightNumber.substring(0, 2);
-    const route = flightRoutes[flight.flightNumber];
+    const airlineId = airlineMap.get(flight.airlineCode);
 
-    const airlineId = airlineMap.get(airlineCode);
-    const originId = locationMap.get(route.origin);
-    const destinationId = locationMap.get(route.destination);
+    if (!airlineId) {
+      console.error(`❌ Airline not found: ${flight.airlineCode}`);
+      continue;
+    }
 
-    if (!airlineId || !originId || !destinationId) {
+    // Insert flight into flights table
+    const { data: flightData, error: flightError } = await supabase
+      .from('flights')
+      .upsert(
+        {
+          flightNumber: flight.flightNumber,
+          airlineId: airlineId,
+          flightStatus: 'On_Time',
+        },
+        { onConflict: 'flightNumber' },
+      )
+      .select('id')
+      .single();
+
+    if (flightError) {
       console.error(
-        'Required reference not found for flight:',
-        flight.flightNumber,
+        `❌ Error inserting flight ${flight.flightNumber}:`,
+        flightError,
       );
       continue;
     }
 
-    const { error } = await supabase.from('flights').upsert(
-      {
-        ...flight,
-        airlineId,
-        originId,
-        destinationId,
-      },
-      { onConflict: 'flightNumber' },
-    );
+    const flightId = flightData.id;
+    const route = flightRoutes[flight.flightNumber];
+    const originId = locationMap.get(route.origin);
+    const destinationId = locationMap.get(route.destination);
 
-    if (error) {
+    if (!originId || !destinationId) {
+      console.error(`❌ Location not found for flight: ${flight.flightNumber}`);
+      continue;
+    }
+
+    // Insert route into routes table
+    const { error: routeError } = await supabase.from('routes').upsert({
+      flightId: flightId,
+      originId: originId,
+      destinationId: destinationId,
+    });
+
+    if (routeError) {
       console.error(
-        'Error seeding flight:',
-        {
-          ...flight,
-          airlineId,
-          originId,
-          destinationId,
-        },
-        error,
+        `❌ Error inserting route for flight ${flight.flightNumber}:`,
+        routeError,
       );
     }
   }
 
-  console.log('Flights seeding completed');
+  console.log('✅ Flights and routes seeding completed');
 }

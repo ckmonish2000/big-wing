@@ -5,7 +5,7 @@ import * as path from 'path';
 import seedAirlines from './seed-airlines';
 import seedLocation from './seed-locations';
 import seedFlight from './seed-flights';
-import seedFlightSegments from './seed-flight-segments';
+import seedSchedules from './seed-schedule';
 
 console.log(path.join(__dirname, '../../.env'));
 dotenv.config({
@@ -23,7 +23,8 @@ const seed = async () => {
     await seedLocation(supabase);
     await seedAirlines(supabase);
     await seedFlight(supabase);
-    await seedFlightSegments(supabase);
+    await seedSchedules(supabase);
+    // await seedFlightSegments(supabase);
     console.log('Starting completed');
   } catch (e) {
     console.log('Failed to seed data', e);
