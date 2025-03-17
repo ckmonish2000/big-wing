@@ -93,4 +93,63 @@ export class FlightsService {
       count: totalCount.data as number,
     };
   }
+
+  async getFlightById(id: string): Promise<any> {
+    const { data, error } = await this.supabaseService.client
+      .from('schedules')
+      .select(
+        `
+        id,
+        routes(
+          id,
+          isDirect,
+          originId,
+          destinationId,
+          origin:locations!originId(name,code),
+          destination:locations!destinationId(name,code),
+          flights(
+            id,
+            flightNumber,
+            price,
+            airlines(
+              name,
+              code,
+              logoUrl
+            )
+          )
+        )
+        `,
+      )
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      throwHTTPErr({
+        message: error.message,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
+    }
+
+    const flight = data;
+    return flight;
+    // {
+    //   flightId: flight.id,
+    //   flightNumber: flight.flightNumber,
+    //   airlineName: flight.airlines.name,
+    //   airlineCode: flight.airlines.code,
+    //   airlineLogo: flight.airlines.logoUrl,
+    //   routeId: flight.routes.id,
+    //   originName: flight.routes.originLocation.name,
+    //   originCode: flight.routes.originLocation.code,
+    //   destinationName: flight.routes.destinationLocation.name,
+    //   destinationCode: flight.routes.destinationLocation.code,
+    //   scheduleId: flight.routes.schedules[0].id,
+    //   departureTime: flight.routes.schedules[0].departureTime,
+    //   arrivalTime: flight.routes.schedules[0].arrivalTime,
+    //   frequency: flight.routes.schedules[0].frequency,
+    //   price: flight.price,
+    //   flightStatus: flight.flightStatus
+    // };
+  }
+  
 }

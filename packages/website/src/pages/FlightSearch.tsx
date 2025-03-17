@@ -34,9 +34,18 @@ import {
   PopoverTrigger,
 } from "@/components/atoms/popover";
 import { Skeleton } from "@/components/atoms/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/atoms/dialog";
 import { generateMockFlights, airlines } from "@/lib/mockData";
 import { Flight, FlightSearchParams, FlightFilterOptions, SortCriteria, SortOption, SortDirection } from "@/types/flight";
 import { getOneWayFlights, getRoundTripFlights } from "@/services/flights.service";
+import { useAuth } from "@/hooks/use-auth";
 
 // Helper function to format minutes to hours and minutes
 const formatDuration = (minutes: number): string => {
@@ -46,90 +55,115 @@ const formatDuration = (minutes: number): string => {
 };
 
 const FlightCard = ({ flight, cabin, isReturn }: { flight: Flight; cabin: string; isReturn?: boolean }) => {
+  console.log(flight, 'flightflightflightflight')
   const navigate = useNavigate();
+  const { user, signInWithGoogle } = useAuth();
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
   const cabinPrice = flight?.prices?.[0];
   const departureTime = (flight?.departure.time || '');
   const arrivalTime = (flight?.arrival.time || '');
-
   const handleSelectFlight = () => {
-    navigate(`/payment/${flight.id}`, { state: { flight } });
+    if (!user) {
+      setShowLoginDialog(true);
+      return;
+    }
+    navigate(`/payment?outboundScheduleId=${flight.scheduleId}`, { state: { flight } });
   };
 
   return (
-    <Card className={`mb-4 hover:shadow-md transition-shadow cursor-pointer ${isReturn ? 'border-l-4 border-primary' : ''}`}>
-      <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col justify-between h-full space-y-4">
-          {isReturn && (
-            <div>
-              <Badge variant="outline">Return Flight</Badge>
-            </div>
-          )}
-
-          <div className="flex flex-col space-y-4">
-            {/* Airline Info */}
-            <div className="flex items-center">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 mr-3 sm:mr-4 rounded-full overflow-hidden flex-shrink-0">
-                <img src={flight?.airline.logo} alt={flight?.airline.name} className="w-full h-full object-cover" />
-              </div>
+    <>
+      <Card className={`mb-4 hover:shadow-md transition-shadow cursor-pointer ${isReturn ? 'border-l-4 border-primary' : ''}`}>
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col justify-between h-full space-y-4">
+            {isReturn && (
               <div>
-                <p className="font-bold text-sm sm:text-base">{flight?.airline.name}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">{flight?.flightNumber}</p>
+                <Badge variant="outline">Return Flight</Badge>
               </div>
-            </div>
+            )}
 
-            {/* Flight Times & Route */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between">
-              {/* Departure */}
-              <div className="text-left sm:text-center mb-2 sm:mb-0">
-                <p className="text-base sm:text-lg font-bold">{departureTime}</p>
-                <p className="text-xs sm:text-sm">{flight?.departure.airport.code}</p>
-              </div>
-
-              {/* Flight Duration & Stops */}
-              <div className="flex-grow mx-0 sm:mx-4 my-4 sm:my-0">
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-muted-foreground">{formatDuration(flight?.duration || 0)}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {flight?.stops === 0 ? "Direct" : `${flight?.stops} stop${flight?.stops > 1 ? "s" : ""}`}
-                  </p>
+            <div className="flex flex-col space-y-4">
+              {/* Airline Info */}
+              <div className="flex items-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 mr-3 sm:mr-4 rounded-full overflow-hidden flex-shrink-0">
+                  <img src={flight?.airline.logo} alt={flight?.airline.name} className="w-full h-full object-cover" />
                 </div>
-                <div className="relative w-full h-[2px] bg-gray-300 my-2">
-                  <div className="absolute top-1/2 left-0 w-2 h-2 bg-primary rounded-full transform -translate-y-1/2"></div>
-                  {flight?.stops > 0 && (
-                    <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-gray-500 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-                  )}
-                  <div className="absolute top-1/2 right-0 w-2 h-2 bg-primary rounded-full transform -translate-y-1/2"></div>
+                <div>
+                  <p className="font-bold text-sm sm:text-base">{flight?.airline.name}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{flight?.flightNumber}</p>
                 </div>
               </div>
 
-              {/* Arrival */}
-              <div className="text-right sm:text-center">
-                <p className="text-base sm:text-lg font-bold">{arrivalTime}</p>
-                <p className="text-xs sm:text-sm">{flight?.arrival.airport.code}</p>
+              {/* Flight Times & Route */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between">
+                {/* Departure */}
+                <div className="text-left sm:text-center mb-2 sm:mb-0">
+                  <p className="text-base sm:text-lg font-bold">{departureTime}</p>
+                  <p className="text-xs sm:text-sm">{flight?.departure.airport.code}</p>
+                </div>
+
+                {/* Flight Duration & Stops */}
+                <div className="flex-grow mx-0 sm:mx-4 my-4 sm:my-0">
+                  <div className="flex justify-between items-center">
+                    <p className="text-xs text-muted-foreground">{formatDuration(flight?.duration || 0)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {flight?.stops === 0 ? "Direct" : `${flight?.stops} stop${flight?.stops > 1 ? "s" : ""}`}
+                    </p>
+                  </div>
+                  <div className="relative w-full h-[2px] bg-gray-300 my-2">
+                    <div className="absolute top-1/2 left-0 w-2 h-2 bg-primary rounded-full transform -translate-y-1/2"></div>
+                    {flight?.stops > 0 && (
+                      <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-gray-500 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                    )}
+                    <div className="absolute top-1/2 right-0 w-2 h-2 bg-primary rounded-full transform -translate-y-1/2"></div>
+                  </div>
+                </div>
+
+                {/* Arrival */}
+                <div className="text-right sm:text-center">
+                  <p className="text-base sm:text-lg font-bold">{arrivalTime}</p>
+                  <p className="text-xs sm:text-sm">{flight?.arrival.airport.code}</p>
+                </div>
+              </div>
+
+              {/* Price & Action */}
+              <div className="flex justify-between items-center sm:justify-end sm:space-x-4 pt-2 sm:pt-0">
+                <p className="text-xl sm:text-2xl font-bold">${cabinPrice?.amount}</p>
+                <Button size="sm" className="w-24 sm:w-auto" onClick={handleSelectFlight}>
+                  Select
+                </Button>
               </div>
             </div>
 
-            {/* Price & Action */}
-            <div className="flex justify-between items-center sm:justify-end sm:space-x-4 pt-2 sm:pt-0">
-              <p className="text-xl sm:text-2xl font-bold">${cabinPrice?.amount}</p>
-              <Button size="sm" className="w-24 sm:w-auto" onClick={handleSelectFlight}>
-                Select
-              </Button>
-            </div>
+            {/* Connection Info */}
+            {flight?.stops > 0 && flight?.connection && (
+              <div className="pt-3 border-t">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Connecting in {flight?.connection[0].airport?.city} ({flight?.connection[0].airport?.code})
+                  {flight.connection[0].duration && ` · ${formatDuration(flight.connection[0].duration)} layover`}
+                </p>
+              </div>
+            )}
           </div>
+        </CardContent>
+      </Card>
 
-          {/* Connection Info */}
-          {flight?.stops > 0 && flight?.connection && (
-            <div className="pt-3 border-t">
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Connecting in {flight?.connection[0].airport?.city} ({flight?.connection[0].airport?.code})
-                {flight.connection[0].duration && ` · ${formatDuration(flight.connection[0].duration)} layover`}
-              </p>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign in to continue</DialogTitle>
+            <DialogDescription>
+              Please sign in to proceed with your booking.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-4">
+            <Button onClick={signInWithGoogle} className="w-full">
+              <img src="/icons/google.svg" width={24} height={24} className="mr-2" />
+              Sign in with Google
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
@@ -259,12 +293,13 @@ const FlightSearch = () => {
           pageNumber: pageParam as number,
           pageSize: 10,
         });
-        
+
         return {
           flights: response.data.map(pair => ({
             outbound: {
               id: pair.from.flightId,
               flightNumber: pair.from.flightNumber,
+              scheduleId: pair.from.scheduleId,
               airline: {
                 name: pair.from.airlineName,
                 code: pair.from.airlineCode,
@@ -299,6 +334,7 @@ const FlightSearch = () => {
             return: {
               id: pair.return.flightId,
               flightNumber: pair.return.flightNumber,
+              scheduleId: pair.return.scheduleId,
               airline: {
                 name: pair.return.airlineName,
                 code: pair.return.airlineCode,
@@ -348,6 +384,7 @@ const FlightSearch = () => {
         flights: response.data.map(flight => ({
           id: flight.flightId,
           flightNumber: flight.flightNumber,
+          scheduleId: flight.scheduleId,
           airline: {
             name: flight.airlineName,
             code: flight.airlineCode,

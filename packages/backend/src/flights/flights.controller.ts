@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { GetOneWayFlightsDto } from './dto/get-one-way-flights.dto';
 import { GetRoundTripFlightsDto } from './dto/get-round-trip-flights.dto';
@@ -23,5 +23,10 @@ export class FlightsController {
     @Query() query: GetRoundTripFlightsDto,
   ): Promise<PaginatedRoundTripFlightsResponse> {
     return this.flightsService.getRoundTripFlights(query);
+  }
+
+  @Get(':id')
+  async getFlightById(@Param('id') id: string): Promise<any> {
+    return this.flightsService.getFlightById(id);
   }
 }

@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LocationsModule } from './locations/locations.module';
 import { SharedModule } from './shared/shared.module';
 import { FlightsModule } from './flights/flights.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FlightsModule } from './flights/flights.module';
     SharedModule,
     LocationsModule,
     FlightsModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -33,7 +33,7 @@ const Header = ({
             <img src="/icons/google.svg" width={24} height={24} />
             Sign In
           </Button>}
-          {session && <Button onClick={handleLogin} size="sm" className="rounded-full px-4">
+          {session && <Button onClick={handleLogout} size="sm" className="rounded-full px-4">
             Sign Out
           </Button>}
         </div>
