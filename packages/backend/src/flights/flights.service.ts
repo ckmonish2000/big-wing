@@ -63,6 +63,14 @@ export class FlightsService {
     } = params;
     const supabase = this.supabaseService.client;
 
+    // Get total count
+    const totalCount = await supabase.rpc('round_trip_flights_count', {
+      origincode: originCode,
+      destinationcode: destinationCode,
+      departuredate: departureDate,
+      returndate: returnDate,
+    });
+
     // Get paginated flights
     const flightData = await supabase.rpc('round_trip_flights', {
       origincodeparam: originCode,
@@ -82,7 +90,7 @@ export class FlightsService {
 
     return {
       data: flightData.data as RoundTripFlights[],
-      count: flightData.data?.length || 0,
+      count: totalCount.data as number,
     };
   }
 }
