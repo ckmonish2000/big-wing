@@ -54,8 +54,7 @@ const formatDuration = (minutes: number): string => {
   return `${hours}h ${mins}m`;
 };
 
-const FlightCard = ({ flight, cabin, isReturn }: { flight: Flight; cabin: string; isReturn?: boolean }) => {
-  console.log(flight, 'flightflightflightflight')
+const FlightCard = ({ flight, isReturn, roundTripFlight }: { flight: Flight; isReturn?: boolean, roundTripFlight?: RoundTripFlight }) => {
   const navigate = useNavigate();
   const { user, signInWithGoogle } = useAuth();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
@@ -67,7 +66,11 @@ const FlightCard = ({ flight, cabin, isReturn }: { flight: Flight; cabin: string
       setShowLoginDialog(true);
       return;
     }
-    navigate(`/payment?outboundScheduleId=${flight.scheduleId}`, { state: { flight } });
+    if (roundTripFlight) {
+      navigate(`/payment?outboundScheduleId=${roundTripFlight.outbound.scheduleId}&returnScheduleId=${roundTripFlight.return.scheduleId}`, { state: { roundTripFlight } });
+    } else {
+      navigate(`/payment?outboundScheduleId=${flight.scheduleId}`, { state: { flight } });
+    }
   };
 
   return (
@@ -831,20 +834,19 @@ const FlightSearch = () => {
                       <FlightCard
                         key={flight.outbound.id}
                         flight={flight.outbound}
-                        cabin={searchParams.cabin}
+                        roundTripFlight={flight}
                       />
                       <FlightCard
                         isReturn={true}
                         key={flight.return.id}
                         flight={flight.return}
-                        cabin={searchParams.cabin}
+                        roundTripFlight={flight}
                       />
                     </div>
                   ) : (
                     <FlightCard
                       key={flight.id}
                       flight={flight}
-                      cabin={searchParams.cabin}
                     />
                   )
                 ))}

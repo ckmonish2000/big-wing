@@ -100,6 +100,8 @@ export class FlightsService {
       .select(
         `
         id,
+        departureTime,
+        arrivalTime,
         routes(
           id,
           isDirect,

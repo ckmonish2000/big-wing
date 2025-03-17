@@ -55,11 +55,18 @@ export const getOneWayFlights = async (
 export const getRoundTripFlights = async (
   params: GetRoundTripFlightsParams
 ): Promise<PaginatedRoundTripFlightsResponse> => {
-  return HttpClient.apiGet<PaginatedRoundTripFlightsResponse>("/flights/round-trip", {
-    query: {
-      ...params,
-      pageSize: params.pageSize || 10,
-      pageNumber: params.pageNumber || 1,
-    },
-  });
+  return HttpClient.apiGet<PaginatedRoundTripFlightsResponse>(
+    "/flights/round-trip",
+    {
+      query: {
+        ...params,
+        pageSize: params.pageSize || 10,
+        pageNumber: params.pageNumber || 1,
+      },
+    }
+  );
+};
+
+export const getFlightById = async (id: string): Promise<Flight> => {
+  return HttpClient.apiGet<Flight>(`/flights/${id}`);
 };
