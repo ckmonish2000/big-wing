@@ -115,6 +115,7 @@ const SearchForm = () => {
   }, []);
 
   const onSubmit = (values: SearchFormValues) => {
+    // console.log(, 'values');
     // Navigate to search results with params
     navigate(`/flights/search?${new URLSearchParams({
       origin: values.origin,
@@ -274,53 +275,6 @@ const SearchForm = () => {
                   )}
                 />
               )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="passengers"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Passengers</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center space-x-4 h-10 p-2 border rounded-md bg-white/50">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <PassengerSelector
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="cabin"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Cabin Class</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-white/50">
-                          <SelectValue placeholder="Select cabin class" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="pointer-events-auto">
-                        {cabinOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             <Button type="submit" className="w-full md:w-auto px-8 rounded-full bg-primary hover:bg-primary/90">

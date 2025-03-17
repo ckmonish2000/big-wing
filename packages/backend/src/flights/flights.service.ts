@@ -6,6 +6,7 @@ import {
 } from './interfaces/flight.interface';
 import { SupabaseService } from 'src/shared/services/supabase.service';
 import { throwHTTPErr } from 'src/utils';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class FlightsService {

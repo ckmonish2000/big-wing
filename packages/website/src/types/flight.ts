@@ -19,6 +19,7 @@ export interface FlightPrice {
 }
 
 export interface Flight {
+  [x: string]: any;
   id: string;
   airline: Airline;
   flightNumber: string;

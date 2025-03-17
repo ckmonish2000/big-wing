@@ -113,12 +113,9 @@ const PaymentPage = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="details" disabled={isConfirmed}>
             Flight Details
-          </TabsTrigger>
-          <TabsTrigger value="payment" disabled={isConfirmed}>
-            Payment
           </TabsTrigger>
           <TabsTrigger value="confirmation">
             Confirmation
@@ -219,7 +216,7 @@ const PaymentPage = () => {
                   <p className="text-2xl font-bold">${totalAmount.toFixed(2)}</p>
                   <p className="text-sm text-muted-foreground">{mockPassengers.length} passenger{mockPassengers.length > 1 ? 's' : ''}</p>
                 </div>
-                <Button onClick={() => setActiveTab("payment")}>
+                <Button onClick={() => setActiveTab("confirmation")}>
                   Proceed to Payment
                 </Button>
               </div>

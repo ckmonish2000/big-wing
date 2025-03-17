@@ -85,60 +85,6 @@ const Index = () => {
           <SearchForm />
         </section>
 
-        {/* Popular Destinations */}
-        <section className="container mx-auto px-4 mt-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Popular Destinations</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore our curated selection of trending destinations with
-              exclusive deals and unforgettable experiences.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {popularDestinations.map((destination, index) => (
-              <motion.div
-                key={destination.id}
-                className="group cursor-pointer"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index, duration: 0.5 }}
-                onClick={() => navigateToDestination(destination.code)}
-              >
-                <Card className="overflow-hidden h-full border-0 shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative h-48 w-full overflow-hidden">
-                    <img
-                      src={destination.image}
-                      alt={destination.city}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 p-4 text-white">
-                      <h3 className="text-xl font-bold">{destination.city}</h3>
-                      <p className="text-sm text-white/80">{destination.country}</p>
-                    </div>
-                  </div>
-                  <CardContent className="p-4 flex justify-between items-center">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Starting from</p>
-                      <p className="text-xl font-bold text-primary">${destination.price}</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="rounded-full">
-                      Explore <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Button variant="outline" className="rounded-full px-6">
-              View All Destinations <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </section>
-
         {/* Features */}
         <section className="container mx-auto px-4 mt-24">
           <div className="text-center mb-16">

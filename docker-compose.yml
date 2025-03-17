@@ -25,6 +25,9 @@ services:
       - .env  # ✅ Load shared environment variables
     ports:
       - "4200:4200"
+    volumes:
+      - ./packages/website:/usr/src/app/packages/website
+      - /usr/src/app/packages/website/node_modules
     # depends_on:
     #   - backend
     networks:
