@@ -17,6 +17,16 @@ export interface Flight {
 }
 
 export interface PaginatedFlightsResponse {
-  data: any; //Flight[];
+  data: Flight[];
+  count: number;
+}
+
+export interface RoundTripFlights {
+  from: Flight[];
+  return: Flight[];
+}
+
+export interface PaginatedRoundTripFlightsResponse {
+  data: RoundTripFlights[];
   count: number;
 }

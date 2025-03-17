@@ -36,7 +36,7 @@ import {
 import { Skeleton } from "@/components/atoms/skeleton";
 import { generateMockFlights, airlines } from "@/lib/mockData";
 import { Flight, FlightSearchParams, FlightFilterOptions, SortCriteria, SortOption, SortDirection } from "@/types/flight";
-import { getOneWayFlights } from "@/services/flights.service";
+import { getOneWayFlights, getRoundTripFlights } from "@/services/flights.service";
 
 // Helper function to format minutes to hours and minutes
 const formatDuration = (minutes: number): string => {
@@ -64,7 +64,7 @@ const FlightCard = ({ flight, cabin, isReturn }: { flight: Flight; cabin: string
               <Badge variant="outline">Return Flight</Badge>
             </div>
           )}
-          
+
           <div className="flex flex-col space-y-4">
             {/* Airline Info */}
             <div className="flex items-center">
@@ -177,10 +177,32 @@ const LoadingSkeleton = () => (
   </>
 );
 
-interface FlightPage {
+type FlightPage = {
   flights: Flight[];
   nextPage: number;
   hasMore: boolean;
+};
+
+type RoundTripFlight = {
+  outbound: Flight;
+  return: Flight;
+};
+
+type RoundTripFlightPage = {
+  flights: RoundTripFlight[];
+  nextPage: number;
+  hasMore: boolean;
+};
+
+type QueryResult = FlightPage | RoundTripFlightPage;
+type FlightResult = Flight | RoundTripFlight;
+
+function isRoundTripFlight(flight: FlightResult): flight is RoundTripFlight {
+  return 'outbound' in flight && 'return' in flight;
+}
+
+function isRoundTripFlightPage(page: QueryResult): page is RoundTripFlightPage {
+  return 'flights' in page && page.flights.length > 0 && 'outbound' in page.flights[0];
 }
 
 const FlightSearch = () => {
@@ -221,11 +243,97 @@ const FlightSearch = () => {
     isFetchingNextPage,
     isLoading,
     isError,
-  } = useInfiniteQuery<FlightPage>({
+  } = useInfiniteQuery<QueryResult>({
     queryKey: ['flights', searchParams, filterOptions],
     queryFn: async ({ pageParam = 1 }) => {
       if (!searchParams?.origin || !searchParams?.destination || !searchParams?.departureDate) {
         throw new Error('Missing required search parameters');
+      }
+
+      if (searchParams.tripType === 'round-trip' && searchParams.returnDate) {
+        const response = await getRoundTripFlights({
+          originCode: searchParams.origin,
+          destinationCode: searchParams.destination,
+          departureDate: new Date(new Date(searchParams.departureDate).getTime() + 24 * 60 * 60 * 1000).toISOString(),
+          returnDate: new Date(new Date(searchParams.returnDate).getTime() + 24 * 60 * 60 * 1000).toISOString(),
+          pageNumber: pageParam as number,
+          pageSize: 10,
+        });
+        
+        return {
+          flights: response.data.map(pair => ({
+            outbound: {
+              id: pair.from.flightId,
+              flightNumber: pair.from.flightNumber,
+              airline: {
+                name: pair.from.airlineName,
+                code: pair.from.airlineCode,
+                logo: pair.from.airlineLogo
+              },
+              departure: {
+                time: pair.from.departureTime,
+                airport: {
+                  name: pair.from.originName,
+                  code: pair.from.originCode,
+                  city: pair.from.originCity || '',
+                  country: pair.from.originCountry || ''
+                }
+              },
+              arrival: {
+                time: pair.from.arrivalTime,
+                airport: {
+                  name: pair.from.destinationName,
+                  code: pair.from.destinationCode,
+                  city: pair.from.destinationCity || '',
+                  country: pair.from.destinationCountry || ''
+                }
+              },
+              duration: Math.round((new Date(pair.from.arrivalTime).getTime() - new Date(pair.from.departureTime).getTime()) / 1000 / 60),
+              stops: 0,
+              prices: [{
+                amount: pair.from.price,
+                currency: 'USD',
+                cabin: searchParams.cabin
+              }]
+            },
+            return: {
+              id: pair.return.flightId,
+              flightNumber: pair.return.flightNumber,
+              airline: {
+                name: pair.return.airlineName,
+                code: pair.return.airlineCode,
+                logo: pair.return.airlineLogo
+              },
+              departure: {
+                time: pair.return.departureTime,
+                airport: {
+                  name: pair.return.originName,
+                  code: pair.return.originCode,
+                  city: pair.return.originCity || '',
+                  country: pair.return.originCountry || ''
+                }
+              },
+              arrival: {
+                time: pair.return.arrivalTime,
+                airport: {
+                  name: pair.return.destinationName,
+                  code: pair.return.destinationCode,
+                  city: pair.return.destinationCity || '',
+                  country: pair.return.destinationCountry || ''
+                }
+              },
+              duration: Math.round((new Date(pair.return.arrivalTime).getTime() - new Date(pair.return.departureTime).getTime()) / 1000 / 60),
+              stops: 0,
+              prices: [{
+                amount: pair.return.price,
+                currency: 'USD',
+                cabin: searchParams.cabin
+              }]
+            }
+          })),
+          nextPage: (pageParam as number) + 1,
+          hasMore: ((pageParam as number) * 10) < response.count,
+        } as RoundTripFlightPage;
       }
 
       const response = await getOneWayFlights({
@@ -235,6 +343,7 @@ const FlightSearch = () => {
         pageNumber: pageParam as number,
         pageSize: 10,
       });
+
       return {
         flights: response.data.map(flight => ({
           id: flight.flightId,
@@ -248,50 +357,75 @@ const FlightSearch = () => {
             time: flight.departureTime,
             airport: {
               name: flight.originName,
-              code: flight.originCode
+              code: flight.originCode,
+              city: flight.originCity || '',
+              country: flight.originCountry || ''
             }
           },
           arrival: {
             time: flight.arrivalTime,
             airport: {
               name: flight.destinationName,
-              code: flight.destinationCode
+              code: flight.destinationCode,
+              city: flight.destinationCity || '',
+              country: flight.destinationCountry || ''
             }
           },
           duration: Math.round((new Date(flight.arrivalTime).getTime() - new Date(flight.departureTime).getTime()) / 1000 / 60),
           stops: 0,
           prices: [{
             amount: flight.price,
+            currency: 'USD',
+            cabin: searchParams.cabin
           }]
         })),
         nextPage: (pageParam as number) + 1,
         hasMore: ((pageParam as number) * 10) < response.count,
-      };
+      } as FlightPage;
     },
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextPage : undefined,
     enabled: !!searchParams?.origin && !!searchParams?.destination && !!searchParams?.departureDate,
     initialPageParam: 1,
   });
 
-  const allFlights = data?.pages.flatMap(page => page.flights) || [];
+  const allFlights: FlightResult[] = data?.pages.flatMap<FlightResult>(page => {
+    if (isRoundTripFlightPage(page)) {
+      return page.flights;
+    }
+    return (page as FlightPage).flights;
+  }) || [];
 
   // Apply filters and sorting
   const filteredFlights = allFlights.filter(flight => {
+    return true
     // Filter by airlines
-    // if (filterOptions.airlines?.length > 0 && !filterOptions.airlines.includes(flight.airline.code)) {
-    //   return false;
-    // }
+    if (filterOptions.airlines?.length > 0) {
+      if (isRoundTripFlight(flight)) {
+        return filterOptions.airlines.includes(flight.outbound.airline.code) &&
+          filterOptions.airlines.includes(flight.return.airline.code);
+      }
+      return filterOptions.airlines.includes(flight.airline.code);
+    }
 
-    // // Filter by max price
-    // const cabinPrice = flight?.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
-    // if (filterOptions.maxPrice && cabinPrice > filterOptions.maxPrice) {
-    //   return false;
-    // }
+    // Filter by max price
+    if (filterOptions.maxPrice) {
+      if (isRoundTripFlight(flight)) {
+        const outboundPrice = flight.outbound.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
+        const returnPrice = flight.return.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
+        return (outboundPrice + returnPrice) <= filterOptions.maxPrice;
+      }
+      const price = flight.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
+      return price <= filterOptions.maxPrice;
+    }
 
-    // // Filter by number of stops
-    // if (filterOptions.maxStops !== undefined && flight?.stops > filterOptions.maxStops) {
-    //   return false;
-    // }
+    // Filter by number of stops
+    if (filterOptions.maxStops !== undefined) {
+      if (isRoundTripFlight(flight)) {
+        return flight.outbound.stops <= filterOptions.maxStops &&
+          flight.return.stops <= filterOptions.maxStops;
+      }
+      return flight.stops <= filterOptions.maxStops;
+    }
 
     return true;
   }).sort((a, b) => {
@@ -300,18 +434,42 @@ const FlightSearch = () => {
 
     switch (option) {
       case 'price': {
-        const priceA = a.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
-        const priceB = b.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
+        const priceA = isRoundTripFlight(a)
+          ? (a.outbound.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0) +
+          (a.return.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0)
+          : a.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
+        const priceB = isRoundTripFlight(b)
+          ? (b.outbound.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0) +
+          (b.return.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0)
+          : b.prices.find(p => p.cabin === searchParams?.cabin)?.amount || 0;
         return (priceA - priceB) * multiplier;
       }
       case 'duration': {
-        return (a.duration - b.duration) * multiplier;
+        const durationA = isRoundTripFlight(a)
+          ? a.outbound.duration + a.return.duration
+          : a.duration;
+        const durationB = isRoundTripFlight(b)
+          ? b.outbound.duration + b.return.duration
+          : b.duration;
+        return (durationA - durationB) * multiplier;
       }
       case 'departure': {
-        return (new Date(a.departure.time).getTime() - new Date(b.departure.time).getTime()) * multiplier;
+        const departureA = isRoundTripFlight(a)
+          ? new Date(a.outbound.departure.time).getTime()
+          : new Date(a.departure.time).getTime();
+        const departureB = isRoundTripFlight(b)
+          ? new Date(b.outbound.departure.time).getTime()
+          : new Date(b.departure.time).getTime();
+        return (departureA - departureB) * multiplier;
       }
       case 'arrival': {
-        return (new Date(a.arrival.time).getTime() - new Date(b.arrival.time).getTime()) * multiplier;
+        const arrivalA = isRoundTripFlight(a)
+          ? new Date(a.return.arrival.time).getTime()
+          : new Date(a.arrival.time).getTime();
+        const arrivalB = isRoundTripFlight(b)
+          ? new Date(b.return.arrival.time).getTime()
+          : new Date(b.arrival.time).getTime();
+        return (arrivalA - arrivalB) * multiplier;
       }
       default:
         return 0;
@@ -630,24 +788,24 @@ const FlightSearch = () => {
               }
             >
               <div className="space-y-4">
-                {filteredFlights.map((flight) => (
-                  searchParams.tripType === 'round-trip' ? (
-                    <div key={flight?.id} className="grid grid-cols-2 gap-4">
+                {filteredFlights.map((flight: FlightResult) => (
+                  isRoundTripFlight(flight) ? (
+                    <div key={`${flight.outbound.id}-${flight.return.id}`} className="grid grid-cols-2 gap-4">
                       <FlightCard
-                        key={flight?.id}
-                        flight={flight}
+                        key={flight.outbound.id}
+                        flight={flight.outbound}
                         cabin={searchParams.cabin}
                       />
                       <FlightCard
                         isReturn={true}
-                        key={flight?.id}
-                        flight={flight}
+                        key={flight.return.id}
+                        flight={flight.return}
                         cabin={searchParams.cabin}
                       />
                     </div>
                   ) : (
                     <FlightCard
-                      key={flight?.id}
+                      key={flight.id}
                       flight={flight}
                       cabin={searchParams.cabin}
                     />
