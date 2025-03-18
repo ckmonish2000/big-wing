@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Booking } from '@big-wing/common';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '@supabase/supabase-js';
 import { SupabaseService } from 'src/shared/services/supabase.service';
 import { throwHTTPErr } from 'src/utils';
@@ -219,5 +219,49 @@ export class BookingsService {
     }
 
     return { ...data, user: userData?.data?.[0] };
+  }
+
+  async getBookingStatus(
+    bookingId: string,
+    token: string,
+  ): Promise<{ bookingStatus: string }> {
+    if (!token) {
+      throwHTTPErr({
+        message: 'Token is required',
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
+    }
+
+    try {
+      const userResponse =
+        await this.supabaseService.client.auth.getUser(token);
+      if (userResponse.error) {
+        throwHTTPErr({
+          message: 'Invalid token',
+          statusCode: HttpStatus.UNAUTHORIZED,
+        });
+      }
+
+      const { data, error } = await this.supabaseService.client
+        .from('bookings')
+        .select('bookingStatus')
+        .eq('id', bookingId)
+        .eq('userId', userResponse.data.user.id)
+        .single();
+
+      if (error) {
+        throwHTTPErr({
+          message: error.message,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        });
+      }
+
+      return { bookingStatus: data.bookingStatus };
+    } catch (error: any) {
+      throwHTTPErr({
+        message: error.message,
+        statusCode: HttpStatus.UNAUTHORIZED,
+      });
+    }
   }
 }

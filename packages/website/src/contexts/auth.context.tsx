@@ -7,21 +7,25 @@ interface AuthContextType {
     user: User | null;
     signInWithGoogle: () => Promise<void>;
     signOut: () => Promise<void>;
+    token: string | null;
 }
 
 export const AuthContext = createContext<AuthContextType>({
     user: null,
     signInWithGoogle: async () => { },
     signOut: async () => { },
+    token: null,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null)
 
     useEffect(() => {
         // Check active sessions and sets the user
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user ?? null);
+            setToken(session?.access_token ?? null)
         });
 
         // Listen for changes on auth state
@@ -45,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, signInWithGoogle, signOut }}>
+        <AuthContext.Provider value={{ token, user, signInWithGoogle, signOut }}>
             {children}
         </AuthContext.Provider>
     );
