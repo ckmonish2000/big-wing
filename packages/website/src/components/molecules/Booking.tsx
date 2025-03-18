@@ -85,8 +85,8 @@ export default function BookingScreen({ flight, passengers, booking, returnBooki
     const navigate = useNavigate();
     return (
         <div className="flex flex-col items-center text-center p-6">
-            <Ticket flight={flight} passengers={passengers} booking={booking} />
-            {returnFlight && <Ticket flight={returnFlight} passengers={passengers} booking={returnBooking} />}
+            <Ticket flight={flight} booking={booking} />
+            {returnFlight && <Ticket flight={returnFlight} booking={returnBooking} />}
 
 
             <div className="flex gap-4">
