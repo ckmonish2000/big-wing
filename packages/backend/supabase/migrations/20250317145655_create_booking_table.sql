@@ -6,5 +6,6 @@ CREATE TABLE "bookings" (
     "scheduleId" UUID NOT NULL REFERENCES "schedules"("id") ON DELETE CASCADE,
     "bookingStatus" bookingStatusEnum NOT NULL DEFAULT 'Pending',  -- ENUM for status
     "totalPrice" NUMERIC NOT NULL CHECK ("totalPrice" >= 0),  -- Final price
+    "isReturn" BOOLEAN NOT NULL DEFAULT FALSE,
     "createdAt" TIMESTAMP DEFAULT NOW()
 );

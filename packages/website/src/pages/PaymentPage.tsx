@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Plane, Calendar, Users, CreditCard, Check } from "lucide-react";
-import { differenceInMinutes, format, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/card";
 import { Separator } from "@/components/atoms/separator";
@@ -13,6 +13,10 @@ import { Flight, BookingPassenger } from "@/types";
 import { getFlightById } from "@/services/flights.service";
 import { useAuth } from "@/hooks/use-auth";
 import { filghtDataMaker } from "@/lib/utils";
+import { createBooking, hasBooking } from "@/services/bookings.service";
+import { toast } from "@/lib/toast-utils";
+import BookingScreen from "@/components/molecules/Booking";
+import { Booking } from "@big-wing/common";
 
 // Helper function to format minutes to hours and minutes
 const formatDuration = (minutes: number): string => {
@@ -137,8 +141,9 @@ const PaymentPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
+  const [bookingDetails, setBookingDetails] = useState<{ outbound: Booking | null, return: Booking | null }>({ outbound: null, return: null })
   const { user } = useAuth();
-
+  console.log(bookingDetails, 'shasjgasjhbsh')
   // Get flight details based on ID
   useEffect(() => {
     if (outboundScheduleId) {
@@ -168,10 +173,50 @@ const PaymentPage = () => {
     }
   }, [outboundScheduleId, returnScheduleId]);
 
-  const handlePaymentComplete = () => {
-    setIsConfirmed(true);
-    setActiveTab("confirmation");
-  };
+  const handlePaymentComplete = async () => {
+    try {
+      const hasOutBoundBooking = await hasBooking(flight.scheduleId);
+      const hasReturnBooking = returnFlight ? await hasBooking(returnFlight?.scheduleId) : false;
+
+      if (hasOutBoundBooking) {
+        toast.error("Outbound booking already exists")
+        return;
+      }
+
+      if (returnFlight && hasReturnBooking) {
+        toast.error("Return booking already exists")
+        return;
+      }
+      console.log(hasOutBoundBooking, hasReturnBooking, 'xlick')
+
+      let outBoundBooking;
+      let returnBooking;
+
+      // eslint-disable-next-line prefer-const
+      outBoundBooking = await createBooking({
+        flightId: flight.id,
+        routeId: flight.routeId,
+        scheduleId: flight.scheduleId,
+        totalPrice: flight.prices[0].amount,
+        isReturn: false,
+      })
+
+      if (returnFlight) {
+        returnBooking = await createBooking({
+          flightId: returnFlight.id,
+          routeId: returnFlight.routeId,
+          scheduleId: returnFlight.scheduleId,
+          totalPrice: returnFlight.prices[0].amount,
+          isReturn: true,
+        })
+      }
+      setBookingDetails({ outbound: outBoundBooking?.entity, return: returnBooking?.entity })
+      setActiveTab("confirmation")
+    } catch (err) {
+      toast.error(err.message)
+    }
+
+  }
 
   if (isLoading || !flight) {
     return (
@@ -253,7 +298,7 @@ const PaymentPage = () => {
                   <p className="text-2xl font-bold">${totalAmount.toFixed(2)}</p>
                   <p className="text-sm text-muted-foreground">{mockPassengers.length} passenger{mockPassengers.length > 1 ? 's' : ''}</p>
                 </div>
-                <Button onClick={() => setActiveTab("confirmation")}>
+                <Button onClick={handlePaymentComplete}>
                   Proceed to Payment
                 </Button>
               </div>
@@ -264,7 +309,14 @@ const PaymentPage = () => {
         <TabsContent value="confirmation">
           <Card>
             <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center p-6">
+              <BookingScreen
+                flight={flight}
+                returnFlight={flight}
+                passengers={mockPassengers}
+                booking={bookingDetails.outbound}
+                returnBooking={bookingDetails.return}
+              />
+              {/* <div className="flex flex-col items-center text-center p-6">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
                   <Check className="h-8 w-8" />
                 </div>
@@ -335,7 +387,7 @@ const PaymentPage = () => {
                     Download Ticket
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,4 +1,5 @@
 import { RoundTripFlights } from "@big-wing/common";
+import { User } from "@supabase/supabase-js";
 
 export interface Airport {
   code: string;
@@ -123,4 +124,56 @@ export type RoundTripFlightPage = {
   nextPage: number;
   hasMore: boolean;
 };
+
+export interface BookingResponse {
+  id: string;
+  flightId: string;
+  routeId: string;
+  scheduleId: string;
+  totalPrice: number;
+  isReturn: boolean;
+  userId: string;
+  bookingStatus: string;
+  createdAt: string;
+  schedules?: {
+    id: string;
+    departureTime: string;
+    arrivalTime: string;
+    frequency: string;
+  };
+  routes?: {
+    id: string;
+    flightId: string;
+    originId: string;
+    origin: {
+      id: string;
+      name: string;
+      city: string;
+      country: string;
+      code: string;
+    };
+    destination: {
+      id: string;
+      name: string;
+      city: string;
+      country: string;
+      code: string;
+    };
+    isDirect: boolean;
+  };
+  flights?: {
+    id: string;
+    airlineId: string;
+    airlines: {
+      id: string;
+      name: string;
+      code: string;
+      logoUrl: string;
+      country: string;
+    };
+    flightNumber: string;
+    flightStatus: string;
+  };
+  user?: User;
+}
 

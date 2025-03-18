@@ -13,6 +13,7 @@ services:
     volumes:
       - ./packages/backend:/usr/src/app/packages/backend
       - /usr/src/app/packages/backend/node_modules
+      - ./packages/common/dist:/usr/src/app/packages/common/dist
     networks:
       - app-network
 

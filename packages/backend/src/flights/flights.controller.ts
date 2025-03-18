@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { GetOneWayFlightsDto } from './dto/get-one-way-flights.dto';
 import { GetRoundTripFlightsDto } from './dto/get-round-trip-flights.dto';
@@ -6,6 +6,8 @@ import {
   PaginatedFlightsResponse,
   PaginatedRoundTripFlightsResponse,
 } from '@big-wing/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
+import { AuthReq } from 'src/types/AuthRequest';
 
 @Controller('flights')
 export class FlightsController {
@@ -26,6 +28,7 @@ export class FlightsController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getFlightById(@Param('id') id: string): Promise<any> {
     return this.flightsService.getFlightById(id);
   }

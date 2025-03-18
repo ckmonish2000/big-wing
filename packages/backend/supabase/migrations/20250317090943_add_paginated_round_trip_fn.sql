@@ -1,6 +1,3 @@
--- DROP FUNCTION IF EXISTS "round_trip_flights"(
---     TEXT, TEXT, DATE, DATE, INT, INT
--- );
 CREATE OR REPLACE FUNCTION "round_trip_flights"(
     originCodeParam TEXT,
     destinationCodeParam TEXT,
@@ -12,6 +9,14 @@ CREATE OR REPLACE FUNCTION "round_trip_flights"(
     "from" JSONB,
     "return" JSONB
 ) AS $$
+
+
+select * from routes
+select * from schedules
+
+select * from bookings
+
+
 BEGIN
     RETURN QUERY
     WITH outbound AS (

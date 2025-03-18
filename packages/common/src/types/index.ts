@@ -56,3 +56,18 @@ export interface PaginatedRoundTripFlightsResponse {
   data: RoundTripFlights[];
   count: number;
 }
+
+export interface Booking {
+  id?: string;
+  userId: string;
+  flightId: string;
+  routeId: string;
+  scheduleId: string;
+  bookingStatus: "Confirmed" | "Cancelled" | "Pending";
+  totalPrice: number;
+  isReturn: boolean;
+  createdAt: string;
+  Flight?: Flight;
+  Route?: any;
+  Schedule?: any;
+}

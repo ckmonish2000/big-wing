@@ -54,10 +54,10 @@ export const buildUrl = (
   return urlWithPrefix;
 };
 
-export const apiPost = (
+export const apiPost = <T>(
   endpoint: string,
   options?: ApiOptions & { entity?: Record<string, unknown> }
-) => {
+): Promise<T> => {
   const url = buildUrl(endpoint, options.params, options.query);
   return new Promise((resolve, _reject) => {
     apiClient
@@ -86,6 +86,7 @@ export const apiPost = (
 export const apiGet = <T>(endpoint: string, options?: ApiOptions): Promise<T> =>
   new Promise((resolve, _reject) => {
     const url = buildUrl(endpoint, options?.params, options?.query);
+    console.log(endpoint, options?.params, url, "url");
     apiClient
       .get(url)
       .then((response) => {
