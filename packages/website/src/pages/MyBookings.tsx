@@ -138,19 +138,20 @@ const FlightSearch = () => {
     gcTime: 30 * 60 * 1000,
   });
 
-  // Update filtered bookings when bookings or search term changes
+  console.log(bookings,'bookings')
+  // Update filtered bookings when bookings, search term, or sort criteria changes
   useEffect(() => {
     if (bookings) {
-      if (!searchTerm) {
-        setFilteredBookings(bookings);
-      } else {
-        workerRef.current?.postMessage({
-          type: 'SEARCH_BOOKINGS',
-          data: { bookings, searchTerm }
-        });
-      }
+      workerRef.current?.postMessage({
+        type: 'SEARCH_AND_SORT_BOOKINGS',
+        data: { 
+          bookings, 
+          searchTerm,
+          sortCriteria 
+        }
+      });
     }
-  }, [bookings, searchTerm]);
+  }, [bookings, searchTerm, sortCriteria]);
 
   // Get search params from URL
   useEffect(() => {

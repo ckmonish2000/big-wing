@@ -129,7 +129,8 @@ export class BookingsService {
             country
           ),
           flightNumber,
-          flightStatus
+          flightStatus,
+          price
         )
       `,
       )
