@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plane, ArrowUpDown, Search, WifiOff } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +20,7 @@ import { getBookings } from "@/services/bookings.service";
 import { Ticket } from "@/components/molecules/Booking";
 import { bookingMaker, ticketMaker } from "@/lib/utils";
 import { Input } from "@/components/atoms/input";
+import worker_script from "@/workers";
 
 export type QueryResult = FlightPage | RoundTripFlightPage;
 export type FlightResult = Flight | RoundTripFlights;
@@ -97,6 +98,24 @@ const FlightSearch = () => {
     direction: 'asc',
   });
   const [searchParams, setSearchParams] = useState<FlightSearchParams | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredBookings, setFilteredBookings] = useState<BookingResponse[]>([]);
+  const workerRef = useRef<Worker | null>(null);
+
+  // Initialize worker
+  useEffect(() => {
+    workerRef.current = new Worker(worker_script);
+    workerRef.current.onmessage = (event) => {
+      const { type, data } = event.data;
+      if (type === 'SEARCH_RESULTS') {
+        setFilteredBookings(data);
+      }
+    };
+
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
 
   // Handle online/offline status
   useEffect(() => {
@@ -115,9 +134,23 @@ const FlightSearch = () => {
   const { data: bookings, isLoading, isError } = useQuery<BookingResponse[]>({
     queryKey: ['bookings'],
     queryFn: getBookings,
-    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
+
+  // Update filtered bookings when bookings or search term changes
+  useEffect(() => {
+    if (bookings) {
+      if (!searchTerm) {
+        setFilteredBookings(bookings);
+      } else {
+        workerRef.current?.postMessage({
+          type: 'SEARCH_BOOKINGS',
+          data: { bookings, searchTerm }
+        });
+      }
+    }
+  }, [bookings, searchTerm]);
 
   // Get search params from URL
   useEffect(() => {
@@ -166,9 +199,8 @@ const FlightSearch = () => {
                   type="search"
                   placeholder="Search bookings..."
                   className="pl-10 w-full"
-                  onChange={(e) => {
-                    // Handle search input
-                  }}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               <Select
@@ -222,17 +254,19 @@ const FlightSearch = () => {
                 )}
               </div>
             </Card>
-          ) : !bookings || bookings.length === 0 ? (
+          ) : !filteredBookings || filteredBookings.length === 0 ? (
             <Card className="p-8 text-center">
               <div className="flex flex-col items-center">
                 <Plane className="h-16 w-16 text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold mb-2">No bookings found</h3>
                 <p className="text-muted-foreground mb-4">
-                  {isOffline 
-                    ? "You're offline and no cached bookings are available."
-                    : "You haven't made any bookings yet."}
+                  {searchTerm 
+                    ? "No bookings match your search criteria."
+                    : isOffline 
+                      ? "You're offline and no cached bookings are available."
+                      : "You haven't made any bookings yet."}
                 </p>
-                {!isOffline && (
+                {!isOffline && !searchTerm && (
                   <Button onClick={() => navigate('/')}>
                     Search for flights
                   </Button>
@@ -241,7 +275,7 @@ const FlightSearch = () => {
             </Card>
           ) : (
             <div className="space-y-4">
-              {bookings.map((booking) => (
+              {filteredBookings.map((booking) => (
                 <Link key={booking.id} to={`/bookings/${booking.id}`}>
                   <Ticket
                     hidePassenger={true}
