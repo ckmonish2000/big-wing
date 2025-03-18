@@ -4,7 +4,7 @@ import { ArrowRight, Clock, Plane } from "lucide-react";
 import { Card, CardContent } from "@/components/atoms/card";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
-import { Flight, FlightPrice } from "@/types/flight";
+import { Flight, FlightPrice } from "@/types";
 
 // Helper function to format duration in hours and minutes
 const formatDuration = (minutes: number): string => {

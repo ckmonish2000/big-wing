@@ -20,7 +20,7 @@ import {
 } from "@/components/atoms/select";
 import { airports } from "@/lib/mockData";
 import { Card } from "@/components/atoms/card";
-import { FlightSearchParams, TripType } from "@/types/flight";
+import { FlightSearchParams, TripType } from "@/types";
 import SearchDropdown from "./molecules/SearchDropDown";
 import { getLocations } from "@/services/locations.service";
 import { useForm } from "react-hook-form";

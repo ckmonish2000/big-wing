@@ -11,8 +11,8 @@ export class SupabaseService implements OnModuleInit {
 
   onModuleInit() {
     this.supabase = createClient(
-      this.configService.get<string>('SUPABASE_URL') ?? '',
-      this.configService.get<string>('SUPABASE_KEY') ?? '',
+      this.configService.get<string>('VITE_SUPABASE_URL') ?? '',
+      this.configService.get<string>('VITE_SUPABASE_KEY') ?? '',
     );
   }
 

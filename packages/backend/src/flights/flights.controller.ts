@@ -5,7 +5,7 @@ import { GetRoundTripFlightsDto } from './dto/get-round-trip-flights.dto';
 import {
   PaginatedFlightsResponse,
   PaginatedRoundTripFlightsResponse,
-} from './interfaces/flight.interface';
+} from '@big-wing/common';
 
 @Controller('flights')
 export class FlightsController {

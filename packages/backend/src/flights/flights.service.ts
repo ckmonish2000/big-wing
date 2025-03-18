@@ -6,7 +6,7 @@ import {
   PaginatedFlightsResponse,
   PaginatedRoundTripFlightsResponse,
   RoundTripFlights,
-} from './interfaces/flight.interface';
+} from '@big-wing/common';
 import { SupabaseService } from 'src/shared/services/supabase.service';
 import { throwHTTPErr } from 'src/utils';
 
@@ -134,24 +134,5 @@ export class FlightsService {
 
     const flight = data;
     return flight;
-    // {
-    //   flightId: flight.id,
-    //   flightNumber: flight.flightNumber,
-    //   airlineName: flight.airlines.name,
-    //   airlineCode: flight.airlines.code,
-    //   airlineLogo: flight.airlines.logoUrl,
-    //   routeId: flight.routes.id,
-    //   originName: flight.routes.originLocation.name,
-    //   originCode: flight.routes.originLocation.code,
-    //   destinationName: flight.routes.destinationLocation.name,
-    //   destinationCode: flight.routes.destinationLocation.code,
-    //   scheduleId: flight.routes.schedules[0].id,
-    //   departureTime: flight.routes.schedules[0].departureTime,
-    //   arrivalTime: flight.routes.schedules[0].arrivalTime,
-    //   frequency: flight.routes.schedules[0].frequency,
-    //   price: flight.price,
-    //   flightStatus: flight.flightStatus
-    // };
   }
-  
 }

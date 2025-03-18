@@ -1,5 +1,5 @@
 
-import { Airport, Airline, Flight } from '@/types/flight';
+import { Airport, Airline, Flight } from '@/types';
 
 export const airlines: Airline[] = [
   {

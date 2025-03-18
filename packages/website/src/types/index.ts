@@ -1,3 +1,4 @@
+import { RoundTripFlights } from "@big-wing/common";
 
 export interface Airport {
   code: string;
@@ -15,7 +16,7 @@ export interface Airline {
 export interface FlightPrice {
   amount: number;
   currency: string;
-  cabin: 'economy' | 'premium_economy' | 'business' | 'first';
+  cabin: "economy" | "premium_economy" | "business" | "first";
 }
 
 export interface Flight {
@@ -52,7 +53,7 @@ export interface BookingPassenger {
   specialAssistance?: boolean;
 }
 
-export type TripType = 'one-way' | 'round-trip';
+export type TripType = "one-way" | "round-trip";
 
 export interface FlightSearchParams {
   origin: string;
@@ -60,7 +61,7 @@ export interface FlightSearchParams {
   departureDate: string;
   returnDate?: string;
   passengers: number;
-  cabin: 'economy' | 'premium_economy' | 'business' | 'first';
+  cabin: "economy" | "premium_economy" | "business" | "first";
   tripType: TripType;
 }
 
@@ -72,7 +73,7 @@ export interface Booking {
   totalPrice: number;
   currency: string;
   bookingDate: string; // ISO string
-  status: 'confirmed' | 'pending' | 'cancelled';
+  status: "confirmed" | "pending" | "cancelled";
 }
 
 export interface FlightFilterOptions {
@@ -80,16 +81,46 @@ export interface FlightFilterOptions {
   maxPrice?: number;
   departureTime?: {
     start?: string; // HH:MM format
-    end?: string;   // HH:MM format
+    end?: string; // HH:MM format
   };
   maxStops?: number;
   duration?: number; // max duration in minutes
 }
 
-export type SortOption = 'price' | 'duration' | 'departure' | 'arrival';
-export type SortDirection = 'asc' | 'desc';
+export type SortOption = "price" | "duration" | "departure" | "arrival";
+export type SortDirection = "asc" | "desc";
 
 export interface SortCriteria {
   option: SortOption;
   direction: SortDirection;
 }
+
+export interface GetOneWayFlightsParams {
+  originCode: string;
+  destinationCode: string;
+  departureDate: string;
+  pageSize?: number;
+  pageNumber?: number;
+}
+
+export interface GetRoundTripFlightsParams {
+  originCode: string;
+  destinationCode: string;
+  departureDate: string;
+  returnDate: string;
+  pageSize?: number;
+  pageNumber?: number;
+}
+
+export type FlightPage = {
+  flights: Flight[];
+  nextPage: number;
+  hasMore: boolean;
+};
+
+export type RoundTripFlightPage = {
+  flights: RoundTripFlights[];
+  nextPage: number;
+  hasMore: boolean;
+};
+

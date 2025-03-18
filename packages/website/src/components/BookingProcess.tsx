@@ -13,7 +13,7 @@ import { Input } from "@/components/atoms/input";
 import { Checkbox } from "@/components/atoms/checkbox";
 import { Separator } from "@/components/atoms/separator";
 import { toast } from "@/components/atoms/sonner";
-import { Flight, FlightPrice, BookingPassenger } from "@/types/flight";
+import { Flight, FlightPrice, BookingPassenger } from "@/types";
 
 interface BookingProcessProps {
   outboundFlight?: Flight;

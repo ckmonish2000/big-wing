@@ -1,38 +1,10 @@
 import * as HttpClient from "@/services/client";
-import { Flight, FlightSearchParams } from "@/types/flight";
-
-export interface GetOneWayFlightsParams {
-  originCode: string;
-  destinationCode: string;
-  departureDate: string;
-  pageSize?: number;
-  pageNumber?: number;
-}
-
-export interface GetRoundTripFlightsParams {
-  originCode: string;
-  destinationCode: string;
-  departureDate: string;
-  returnDate: string;
-  pageSize?: number;
-  pageNumber?: number;
-}
-
-export interface PaginatedFlightsResponse {
-  data: Flight[];
-  count: number;
-}
-
-export interface RoundTripFlights {
-  from: Flight;
-  outbound: Flight;
-  return: Flight;
-}
-
-export interface PaginatedRoundTripFlightsResponse {
-  data: RoundTripFlights[];
-  count: number;
-}
+import { GetOneWayFlightsParams, GetRoundTripFlightsParams } from "@/types";
+import {
+  Flight,
+  PaginatedFlightsResponse,
+  PaginatedRoundTripFlightsResponse,
+} from "@big-wing/common";
 
 export const searchForFlights = async () => {
   const url = HttpClient.buildUrl("/protected");

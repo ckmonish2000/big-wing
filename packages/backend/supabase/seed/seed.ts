@@ -13,8 +13,8 @@ dotenv.config({
 });
 
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_KEY!,
+  process.env.VITE_SUPABASE_URL!,
+  process.env.VITE_SUPABASE_KEY!,
 );
 
 const seed = async () => {
