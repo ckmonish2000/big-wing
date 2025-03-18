@@ -1,25 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { format, parseISO } from "date-fns";
-import { ArrowLeft, ArrowRight, Filter, CalendarIcon, Clock, Plane, ArrowUpDown, Search } from "lucide-react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { ArrowLeft, Plane, ArrowUpDown, Search, WifiOff } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/atoms/button";
 import { Card, CardContent } from "@/components/atoms/card";
-import { Separator } from "@/components/atoms/separator";
-import { Checkbox } from "@/components/atoms/checkbox";
-import { Badge } from "@/components/atoms/badge";
-import { Slider } from "@/components/atoms/slider";
-import { RadioGroup, RadioGroupItem } from "@/components/atoms/radio-group";
-import { Label } from "@/components/atoms/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/atoms/sheet";
 import {
   Select,
   SelectContent,
@@ -29,15 +13,11 @@ import {
 } from "@/components/atoms/select";
 
 import { Skeleton } from "@/components/atoms/skeleton";
-import { airlines } from "@/lib/mockData";
 import { Flight, FlightSearchParams, FlightFilterOptions, SortCriteria, SortOption, BookingResponse } from "@/types";
-import { getOneWayFlights, getRoundTripFlights } from "@/services/flights.service";
 import { FlightPage, RoundTripFlightPage } from "@/types/index"
-import { PaginatedRoundTripFlightsResponse, RoundTripFlights, Booking } from "@big-wing/common";
-import { OneWayFlightCard, RoundTripFlightCard } from "@/components/molecules/FlightCard";
+import {  RoundTripFlights } from "@big-wing/common";
 import { getBookings } from "@/services/bookings.service";
 import { Ticket } from "@/components/molecules/Booking";
-import { User } from "@supabase/supabase-js";
 import { bookingMaker, ticketMaker } from "@/lib/utils";
 import { Input } from "@/components/atoms/input";
 
@@ -106,6 +86,7 @@ function isRoundTripFlightPage(page: QueryResult): page is RoundTripFlightPage {
 const FlightSearch = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [filterOptions, setFilterOptions] = useState<FlightFilterOptions>({
     airlines: [],
     maxPrice: 2000,
@@ -117,9 +98,25 @@ const FlightSearch = () => {
   });
   const [searchParams, setSearchParams] = useState<FlightSearchParams | null>(null);
 
+  // Handle online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const { data: bookings, isLoading, isError } = useQuery<BookingResponse[]>({
     queryKey: ['bookings'],
     queryFn: getBookings,
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
 
   // Get search params from URL
@@ -150,6 +147,13 @@ const FlightSearch = () => {
         </Button>
         <h1 className="text-2xl font-bold">My Bookings</h1>
       </div>
+
+      {isOffline && (
+        <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center">
+          <WifiOff className="h-5 w-5 text-yellow-600 mr-2" />
+          <span className="text-yellow-800">You're offline. Showing cached data.</span>
+        </div>
+      )}
 
       <div className="">
         <div className="lg:col-span-3">
@@ -207,8 +211,15 @@ const FlightSearch = () => {
                 <Plane className="h-16 w-16 text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Error loading bookings</h3>
                 <p className="text-muted-foreground mb-4">
-                  Please try again later.
+                  {isOffline 
+                    ? "You're offline and no cached data is available."
+                    : "Please try again later."}
                 </p>
+                {!isOffline && (
+                  <Button onClick={() => window.location.reload()}>
+                    Retry
+                  </Button>
+                )}
               </div>
             </Card>
           ) : !bookings || bookings.length === 0 ? (
@@ -217,23 +228,28 @@ const FlightSearch = () => {
                 <Plane className="h-16 w-16 text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold mb-2">No bookings found</h3>
                 <p className="text-muted-foreground mb-4">
-                  You haven't made any bookings yet.
+                  {isOffline 
+                    ? "You're offline and no cached bookings are available."
+                    : "You haven't made any bookings yet."}
                 </p>
-                <Button onClick={() => navigate('/')}>
-                  Search for flights
-                </Button>
+                {!isOffline && (
+                  <Button onClick={() => navigate('/')}>
+                    Search for flights
+                  </Button>
+                )}
               </div>
             </Card>
           ) : (
             <div className="space-y-4">
-              {bookings?.map((booking) => {
-                return <Link to={`/bookings/${booking.id}`}>
+              {bookings.map((booking) => (
+                <Link key={booking.id} to={`/bookings/${booking.id}`}>
                   <Ticket
                     hidePassenger={true}
                     flight={ticketMaker(booking)}
-                    booking={bookingMaker(booking)} />
+                    booking={bookingMaker(booking)}
+                  />
                 </Link>
-              })}
+              ))}
             </div>
           )}
         </div>

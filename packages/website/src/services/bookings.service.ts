@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from "./client";
+import { indexedDBHelper } from "@/lib/indexedDB";
 
 export interface CreateBookingRequest {
   flightId: string;
@@ -51,10 +52,27 @@ export const hasBooking = async (scheduleId: string): Promise<boolean> => {
 };
 
 export const getBookings = async (): Promise<BookingResponse[]> => {
-  const response = await apiGet<{ status: boolean; entity: BookingResponse[] }>(
-    `/bookings`
-  );
-  return response.entity;
+  try {
+    // Try to fetch from API first
+    const response = await apiGet<{ status: boolean; entity: BookingResponse[] }>(
+      `/bookings`
+    );
+    
+    // If successful, cache the data
+    await indexedDBHelper.saveBookings(response.entity);
+    return response.entity;
+  } catch (error: unknown) {
+    // If API fails, try to get from IndexedDB
+    try {
+      const cachedBookings = await indexedDBHelper.getBookings();
+      if (cachedBookings.length > 0) {
+        return cachedBookings;
+      }
+    } catch (dbError: unknown) {
+      console.error('Failed to fetch from IndexedDB:', dbError);
+    }
+    throw error;
+  }
 };
 
 export const getBookingDetials = async ({
