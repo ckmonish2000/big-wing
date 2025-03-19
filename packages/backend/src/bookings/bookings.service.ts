@@ -1,17 +1,32 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Booking } from '@big-wing/common';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { User } from '@supabase/supabase-js';
 import { SupabaseService } from 'src/shared/services/supabase.service';
 import { throwHTTPErr } from 'src/utils';
 
+type BookingType = {
+  userId: string;
+  flightId: string;
+  routeId: string;
+  scheduleId: string;
+  bookingStatus: string;
+  totalPrice: number;
+  isReturn: boolean;
+  createdAt: string;
+};
+
 @Injectable()
 export class BookingsService {
+  private readonly logger = new Logger(BookingsService.name);
+
   constructor(private readonly supabaseService: SupabaseService) {}
 
-  async createBooking(
-    booking: Booking,
-  ): Promise<{ status: boolean; entity: Booking & { user: Partial<User> } }> {
+  async createBooking(booking: BookingType): Promise<{
+    status: boolean;
+    entity: BookingType & { user: Partial<User> };
+  }> {
+    this.logger.log(`Creating booking: ${JSON.stringify(booking)}`);
     if (!booking?.scheduleId || !booking?.userId) {
       throwHTTPErr({
         message: 'Invalid booking data',
@@ -35,7 +50,7 @@ export class BookingsService {
       .from('bookings')
       .insert(booking)
       .select()
-      .single<Booking>();
+      .single<BookingType>();
 
     const userData = await this.supabaseService.client.rpc(
       'get_user_details_by_id',
@@ -59,6 +74,9 @@ export class BookingsService {
   }
 
   async hasBooking(scheduleId: string, userId: string): Promise<boolean> {
+    this.logger.log(
+      `Checking if booking exists for schedule ${scheduleId} and user ${userId}`,
+    );
     const { data, error } = await this.supabaseService.client
       .from('bookings')
       .select('id')
@@ -79,6 +97,7 @@ export class BookingsService {
   }
 
   async getBookings(userId: string): Promise<any> {
+    this.logger.log(`Getting all bookings for user ${userId}`);
     const { data, error } = await this.supabaseService.client
       .from('bookings')
       .select(
@@ -147,6 +166,7 @@ export class BookingsService {
   }
 
   async getBooking(bookingId: string, userId: string): Promise<any> {
+    this.logger.log(`Getting booking ${bookingId} for user ${userId}`);
     const { data, error } = await this.supabaseService.client
       .from('bookings')
       .select(
@@ -226,6 +246,7 @@ export class BookingsService {
     bookingId: string,
     token: string,
   ): Promise<{ bookingStatus: string }> {
+    this.logger.log(`Getting booking status for booking ${bookingId}`);
     if (!token) {
       throwHTTPErr({
         message: 'Token is required',

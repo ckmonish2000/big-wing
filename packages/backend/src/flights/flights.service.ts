@@ -9,16 +9,23 @@ import {
 } from '@big-wing/common';
 import { SupabaseService } from 'src/shared/services/supabase.service';
 import { throwHTTPErr } from 'src/utils';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class FlightsService {
+  private readonly logger = new Logger(FlightsService.name);
+
   constructor(private readonly supabaseService: SupabaseService) {}
 
   async getOneWayFlights(
     params: GetOneWayFlightsDto,
   ): Promise<PaginatedFlightsResponse> {
+    this.logger.log(
+      `Getting one-way flights with params: ${JSON.stringify(params)}`,
+    );
     const { originCode, destinationCode, departureDate, pageSize, pageNumber } =
       params;
+    console.log(params);
     const supabase = this.supabaseService.client;
 
     // Get total count
@@ -53,6 +60,9 @@ export class FlightsService {
   async getRoundTripFlights(
     params: GetRoundTripFlightsDto,
   ): Promise<PaginatedRoundTripFlightsResponse> {
+    this.logger.log(
+      `Getting round-trip flights with params: ${JSON.stringify(params)}`,
+    );
     const {
       originCode,
       destinationCode,
@@ -95,6 +105,7 @@ export class FlightsService {
   }
 
   async getFlightById(id: string): Promise<any> {
+    this.logger.log(`Getting flight by ID: ${id}`);
     const { data, error } = await this.supabaseService.client
       .from('schedules')
       .select(

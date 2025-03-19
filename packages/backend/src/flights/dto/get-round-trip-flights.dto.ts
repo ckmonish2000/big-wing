@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsString, Min } from 'class-validator';
+import { IsDateString, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetRoundTripFlightsDto {
@@ -35,16 +35,14 @@ export class GetRoundTripFlightsDto {
     example: 10,
     minimum: 1,
   })
-  @IsInt()
-  @Min(1)
-  pageSize: number;
+  @IsString()
+  pageSize: string;
 
   @ApiProperty({
     description: 'Page number for pagination',
     example: 1,
     minimum: 1,
   })
-  @IsInt()
-  @Min(1)
-  pageNumber: number;
+  @IsString()
+  pageNumber: string;
 }

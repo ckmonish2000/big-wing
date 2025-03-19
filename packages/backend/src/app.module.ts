@@ -7,6 +7,7 @@ import { LocationsModule } from './locations/locations.module';
 import { SharedModule } from './shared/shared.module';
 import { FlightsModule } from './flights/flights.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { BookingsModule } from './bookings/bookings.module';
     LocationsModule,
     FlightsModule,
     BookingsModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
