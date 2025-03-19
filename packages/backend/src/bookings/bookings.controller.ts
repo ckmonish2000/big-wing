@@ -17,6 +17,14 @@ import { BookingsService } from './bookings.service';
 import { AuthReq } from 'src/types/AuthRequest';
 import { Observable, interval } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiParam,
+} from '@nestjs/swagger';
 
 interface SSEMessage {
   data: string;
@@ -24,10 +32,19 @@ interface SSEMessage {
   type: string;
 }
 
+@ApiTags('bookings')
+@ApiBearerAuth()
 @Controller('bookings')
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
+  @ApiOperation({ summary: 'Create a new booking' })
+  @ApiResponse({
+    status: 201,
+    description: 'The booking has been successfully created',
+    type: CreateBookingDto,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Post()
   @UseGuards(JwtAuthGuard)
   createBooking(
@@ -49,6 +66,16 @@ export class BookingsController {
     });
   }
 
+  @ApiOperation({
+    summary: 'Check if user has a booking for a specific schedule',
+  })
+  @ApiQuery({
+    name: 'scheduleId',
+    required: true,
+    description: 'ID of the schedule to check',
+  })
+  @ApiResponse({ status: 200, description: 'Returns booking status' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get('/verify')
   @UseGuards(JwtAuthGuard)
   async hasBooking(
@@ -60,6 +87,9 @@ export class BookingsController {
     return { status: true, entity: response };
   }
 
+  @ApiOperation({ summary: 'Get all bookings for the authenticated user' })
+  @ApiResponse({ status: 200, description: 'Returns list of bookings' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get()
   @UseGuards(JwtAuthGuard)
   async getBookings(@Req() request: AuthReq) {
@@ -69,6 +99,15 @@ export class BookingsController {
     return { status: true, entity: response };
   }
 
+  @ApiOperation({ summary: 'Get details of a specific booking' })
+  @ApiParam({
+    name: 'bookingId',
+    required: true,
+    description: 'ID of the booking to retrieve',
+  })
+  @ApiResponse({ status: 200, description: 'Returns booking details' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Booking not found' })
   @Get(':bookingId')
   @UseGuards(JwtAuthGuard)
   async getBookingDetials(
@@ -80,6 +119,21 @@ export class BookingsController {
     return { status: true, entity: response };
   }
 
+  @ApiOperation({ summary: 'Stream booking status updates' })
+  @ApiParam({
+    name: 'bookingId',
+    required: true,
+    description: 'ID of the booking to stream status for',
+  })
+  @ApiQuery({
+    name: 'token',
+    required: true,
+    description: 'Authentication token',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns SSE stream of booking status updates',
+  })
   @Sse(':bookingId/status-stream')
   streamBookingStatus(
     @Req() request: AuthReq,
