@@ -104,9 +104,9 @@ pnpm --filter website dev
 ### 6. Access the Application
 
 Once running, access the applications at:
-- Frontend: [http://localhost:3001](http://localhost:3001)
+- Frontend: [http://localhost:4200](http://localhost:4200)
 - Backend API: [http://localhost:3000](http://localhost:3000)
-- API Documentation: [http://localhost:3000/api](http://localhost:3000/api)
+- API Documentation: [http://localhost:3000/api](http://localhost:3000/api/docs)
 
 ## 📝 Development Guidelines
 
@@ -139,12 +139,3 @@ pulumi up
 ```
 
 3. Deploy applications using your preferred cloud provider or container orchestration platform.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
