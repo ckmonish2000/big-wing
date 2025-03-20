@@ -1,9 +1,4 @@
-:4200 {
-    reverse_proxy frontend:4200
-    tls internal
-}
-
-:3000 {
+hello-world-app.in {
     reverse_proxy backend:3000
     tls internal
 }

@@ -19,7 +19,7 @@ RUN pnpm install --filter backend --frozen-lockfile
 FROM builder AS dev
 WORKDIR /usr/src/app/packages/backend
 ENV NODE_ENV=development
-EXPOSE 4000
+EXPOSE 3000
 CMD ["pnpm", "run", "start:dev"]
 
 # ---------------- PRODUCTION STAGE ---------------- #
@@ -28,5 +28,5 @@ WORKDIR /usr/src/app/packages/backend
 # Build the backend
 RUN pnpm run build
 ENV NODE_ENV=production
-EXPOSE 4000
+EXPOSE 3000
 CMD ["pnpm", "run", "start:prod"]
