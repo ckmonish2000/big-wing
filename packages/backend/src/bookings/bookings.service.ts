@@ -239,7 +239,7 @@ export class BookingsService {
       });
     }
 
-    return { ...data, user: userData?.data?.[0] };
+    return { status: true, entity: { ...data, user: userData?.data?.[0] } };
   }
 
   async getBookingStatus(

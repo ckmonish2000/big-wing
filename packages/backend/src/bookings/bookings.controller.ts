@@ -31,7 +31,6 @@ interface SSEMessage {
 
 @ApiTags('bookings')
 @Controller('bookings')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class BookingsController {
   private readonly logger = new Logger(BookingsController.name);
@@ -44,6 +43,7 @@ export class BookingsController {
     description: 'Booking created successfully',
   })
   @Post()
+  @UseGuards(JwtAuthGuard)
   async createBooking(
     @Req() request: AuthReq,
     @Body() createBookingDto: CreateBookingDto,
@@ -67,6 +67,7 @@ export class BookingsController {
     description: 'Returns whether user has booking',
   })
   @Get('has-booking')
+  @UseGuards(JwtAuthGuard)
   async hasBooking(
     @Req() request: AuthReq,
     @Query('scheduleId') scheduleId: string,
@@ -83,6 +84,7 @@ export class BookingsController {
     description: 'Returns list of bookings',
   })
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getBookings(@Req() request: AuthReq): Promise<any> {
     this.logger.log(`Getting all bookings for user ${request.user.sub}`);
     return this.bookingsService.getBookings(request.user.sub);
@@ -94,6 +96,7 @@ export class BookingsController {
     description: 'Returns booking details',
   })
   @Get(':bookingId')
+  @UseGuards(JwtAuthGuard)
   async getBookingDetails(
     @Req() request: AuthReq,
     @Param('bookingId') bookingId: string,
@@ -116,7 +119,7 @@ export class BookingsController {
     @Query('token') token: string,
   ): Observable<SSEMessage> {
     this.logger.log(
-      `Starting status stream for booking ${bookingId} and user ${request.user.sub}`,
+      `Starting status stream for booking ${bookingId} and user ${request}`,
     );
     return interval(5000).pipe(
       switchMap(() => this.bookingsService.getBookingStatus(bookingId, token)),

@@ -88,5 +88,6 @@ export const getBookingDetials = async ({
       },
     }
   );
+  console.log(response,'response')
   return response.entity;
 };

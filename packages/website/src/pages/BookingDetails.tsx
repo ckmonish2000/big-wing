@@ -25,7 +25,7 @@ function BookingDetails() {
     })
     useEffect(() => {
         if (!bookingId) return;
-        const url = buildUrl(`/bookings/:bookingId/status-stream`, { bookingId }, { token });
+        const url = buildUrl(`/bookings/:bookingId/status`, { bookingId }, { token });
         const eventSource = new EventSource(url, {
             withCredentials: true
         });
