@@ -162,7 +162,7 @@ export class BookingsService {
       });
     }
 
-    return data;
+    return { status: true, entity: data };
   }
 
   async getBooking(bookingId: string, userId: string): Promise<any> {

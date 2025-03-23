@@ -57,7 +57,7 @@ export const getBookings = async (): Promise<BookingResponse[]> => {
     const response = await apiGet<{ status: boolean; entity: BookingResponse[] }>(
       `/bookings`
     );
-    
+
     // If successful, cache the data
     await indexedDBHelper.saveBookings(response.entity);
     return response.entity;
